@@ -1,8 +1,15 @@
 Revision history for Perl extension WWW::Search::FirstGov.
 
-2002-03-13  Dennis Sutch <dennis@sutch.com>
+2002-06-03  Dennis Sutch <dennis@sutch.com>
+  Release 1.12
+  - updated to reflect changes to FirstGov (switched to a new search engine built by Fast Search & Transfer of Oslo, Norway on 2002 Jun 03)
+    - the native_query options 'fr' and 'st' are obsolete
+    - the native_query option 'in0' now accepts the value 'any' instead of 'anywhere', and the value of 'home' is obsolete
+  - removed redefined WWW::Search functionality
+
+ 2002-03-13  Dennis Sutch <dennis@sutch.com>
   Release 1.11
-  - upated to reflect changed FirstGov search engine parameters
+  - updated to reflect changed FirstGov search engine parameters
   - approximate_result_count() now returns 1 more than the result count when FirstGov's result count is "more than X relevant results"
   - changed test case 4 to finish sooner
 

@@ -42,28 +42,32 @@ second argument to native_query().
 Retrieve results starting at 100th match.
 
 This option is not passed to FirstGov.gov.  Instead, this option is used to
-set 'fr', 'act.next.x' and 'act.next.y' options to obtain results starting
+set 'offset', 'act.next.x' and 'act.next.y' options to obtain results starting
 the requested starting point.
 
-=item   { 'fr' => '100' }
+=item   { 'offset' => '100' }
 
-Retrieve results starting at the 100th match, when 'act.next.x' and
-'act.next.y' options are set.  Otherwise results start at the 100th less
-the value of the 'nr' option.
+If 'act.next.x' and 'act.next.y' options are set, retrive results starting at
+the 100th plus 1 plus the value of the 'nr' option.  If 'act.prev.x' and
+'act.prev.y' options are set, retrive results starting at the 100th plus 1
+less the value of the 'nr' option.
 
 Note: Do not use this option.  Use the 'begin_at' option instead.
 
+Note: This option was named 'fr' in a past version of FirstGov.gov's search
+engine.
+
 =item   { 'act.next.x' => '1', 'act.next.y' => '1' }
 
-Retrieve next set of results, starting at the value of the 'fr' option plus
-the value of the 'nr' option.
+Retrieve next set of results, starting at the value of the 'offset' option plus
+1 plus the value of the 'nr' option.
 
 Note: Do not use this option.
 
 =item   { 'act.prev.x' => '1', 'act.prev.y' => '1' }
 
-Retrieve previous set of results, starting at the value of the 'fr' option
-less the value of the 'nr' option.
+Retrieve previous set of results, starting at the value of the 'offset'
+option plus 1 less the value of the 'nr' option.
 
 Note: Do not use this option.
 
@@ -71,9 +75,7 @@ Note: Do not use this option.
 
 Retrieve 40 results.
 
-FirstGov.gov returns no more than 100 results at a time.  In addition, when
-the 'nr' option is set to 100, FirstGov.gov treats the 'de' paramater as if it
-is set to 'brief', returning results without descriptions.
+FirstGov.gov returns no more than 100 results at a time.
 
 From FirstGov.gov documentation:
 
@@ -106,6 +108,8 @@ Return results that contain the words 'uncle' and 'sam'.
 
 The native_query() method sets this option.
 
+WWW::Search::FirstGov defaults the mw0 option to an empty string.
+
 Note: Do not use the 'mw0' option, instead use the native_query() method and
 the 'mw1', 'mw2', ... options.  
 
@@ -116,8 +120,12 @@ is a text input field that allows a user to enter the word or words they
 would like to search for.  
 
 =item   { 'mt0' => 'all' }
+
 =item   { 'mt0' => 'any' }
+
 =item   { 'mt0' => 'phrase' }
+
+WWW::Search::FirstGov defaults the mt0 option to 'all'.
 
 From FirstGov.gov documentation:
 
@@ -129,7 +137,12 @@ mt0 field to "all", "any", or "phrase".  If this field is not provided, it is
 defaulted to "all".
 
 =item   { 'ms0' => 'should' }
+
 =item   { 'ms0' => 'mustnot' }
+
+=item   { 'ms0' => 'must' }
+
+WWW::Search::FirstGov defaults the ms0 option to 'must'.
 
 From FirstGov.gov documentation:
 
@@ -138,21 +151,31 @@ whether words should or must not be present in the document.  This is done by
 setting the ms0 field to "should" or "mustnot".  If this field is not provided,
 it is defaulted to "should".
 
-=item   { 'in0' => 'anywhere' }
-=item   { 'in0' => 'home' }
+=item   { 'in0' => 'any' }
+
 =item   { 'in0' => 'title' }
+
+=item   { 'in0' => 'url' }
+
+Note: The value 'anywhere' was used in place of 'any' in a past version of
+FirstGov.gov's search engine.  The value 'home' used in a past version of
+FirstGov.gov's search engine is obsolete.
 
 From FirstGov.gov documentation:
 
 The In parameter (in0) can be implemented to tell the search engine where
 specifically to search.  Setting in0 to "anywhere" searches the complete web
-page of all web pages in a particular database.  Setting in0 to "home"
-searches only the home pages of websites in a particular database.  Setting
-in0 to "title" searches only the Titles of web pages of a particular database.
+page of all web pages in a particular database.  [...]  Setting in0 to "title"
+searches only the Titles of web pages of a particular database.
 
-=item   { 'in0' => 'title', 'dom0' => 'doc.gov' }
+=item   { 'in0' => 'domain', 'dom0' => 'doc.gov noaa.gov', 'doTtoggle' => ' +(' }
 
-The query is limited to searching the doc.gov domain.
+=item   { 'in0' => 'domain', 'dom0' => 'doc.gov noaa.gov', 'doTtoggle' => ' -(' }
+
+The query is limited to searching the doc.gov and noaa.gov domains when the
+doToggle option is set to ' +(' (note leading space).  The query is limited to
+searching all but the doc.gov and noaa.gov domains when the doToggle option is
+set to ' -(' (note leading space).
 
 From the FirstGov.gov documentation:
 
@@ -168,17 +191,6 @@ domain or domain/path combinations up to 20 that you would like to limit your
 searches to.  You can use any combination of domains or domain/path elements
 as long as they are separated by a comma or a space.
 
-=item   { 'pl' => 'domain', 'domain' => 'osec.doc.gov+itd.doc.gov' }
-
-The query is limited to searching the domains osec.doc.gov and itd.doc.gov.
-
-These parameters are no longer used by FirstGov.gov.  FirstGov.gov currently
-accepts these parameters, but converts them to 'in0' and 'dom0' parameters in
-the forms of returned pages.
-
-Note: It is suggested that these options not be used.  Use the 'in0' and
-'dom0' options instead.
-
 =back
 
 =head2 Specifying Federal and/or State Government Databases
@@ -187,27 +199,19 @@ Note: It is suggested that these options not be used.  Use the 'in0' and
 
 =item   { 'db' => 'www' }
 
+Note: The db and st options have been merged into the the db option in the
+current version of FirstGov.gov's search engine.  The value 'states' now
+specifies searches against all states.
+
 From FirstGov.gov documentation:
 
 The Database field (db) allows you to specify if a search should query
 Federal Government websites, State Government websites, or both.  This is done
 by setting db to "www" for a Federal Search, setting db to "states" for a
-State Search, or "www-fed-all" to search both.  If you are using the
-Database field, and allowing the State Search option, it is highly recommended
-you also provide a State Field.  If the db field is not provided, it is
-defaulted to Federal.
+State Search, or "www-fed-all" to search both.  [...]  If the db field is not
+provided, it is defaulted to Federal.
 
-=item   { 'st' => 'NY' }
-
-From FirstGov.gov documentation:
-
-The State field (st) allows you to search for government websites of a
-specific state or territory.  If you are a state agency and want users
-to only search your state's web pages, set this field to your state's
-abbreviation from the list provided below.  (Be sure to have set the db
-field to states!)  If a state is not selected it will default to search
-All States (AS).  List of State and Territory Abbreviations for FirstGov
-Searching:
+List of State and Territory Abbreviations for FirstGov Searching:
 AS - All States,
 AL - Alabama,
 AK - Alaska,
@@ -270,31 +274,9 @@ VI - Virgin Islands.
 
 =back
 
-=head2 Format of Returned Results
+=head2 Result Presentation
 
 =over 4
-
-=item   { 'de' => 'detailed' }
-
-Request FirstGov.gov to return detailed results.
-
-This option may be set to either 'detailed' or 'brief'.  Detailed results
-contain result numbers, URLs, page titles, and descriptions.  Brief results
-contain result numbers, URLs, and page titles.
-
-When the 'nr' option is set to '100', FirstGov.gov treats the 'de' paramater
-as if it is set to 'brief', returning results without descriptions.
-
-Note: It is suggested that this option not be used (since this class was
-developed using detailed results.
-
-From FirstGov.gov documentation:
-
-The Results Format parameter (de) allows you or the user to specify how
-results will be displayed.  Results can be returned with a title and brief
-summary of the content, or just listing the title of the web page.  Use:
-Simply set the de parameter to "brief" or "detailed".  If this parameter is
-not used, de is defaulted to "detailed".
 
 =item   { 'rn' => '2' }
 
@@ -316,10 +298,28 @@ to it.
 
 =back
 
+=head2 Other Options
+
+=item   { 'parsed' => 'true' }
+
+The default behavior for FirstGov.gov's search engine is to parse all search
+requests, and, if any options are missing or deprecated, rewrite the options
+and redirect the browser back to FirstGov.gov.  When the parsed option is set
+to "true", FirstGov.gov does not perform this action.
+
+=back
+
 =head1 SEE ALSO
 
 To make new back-ends, see L<WWW::Search>,
 or the specialized AltaVista searches described in options.
+
+An email list is for notifying users of updates to Perl's 
+WWW::Search::FirstGov module is avilalable at
+http://two.pairlist.net/mailman/listinfo/www-search-firstgov .
+It is meant to be a very low volume list that only notifies users when there
+is a new version of the module available, and possibly when changes to the
+FirstGov search engine have broken the latest version of the module.
 
 =head1 HOW DOES IT WORK?
 
@@ -334,6 +334,13 @@ It parses this page, appending any search hits it finds to
 C<{cache}>.  If it finds a ``next'' button in the text,
 it sets C<{_next_url}> to point to the page for the next
 set of results, otherwise it sets it to undef to indicate we're done.
+
+=head1 SUPPORT
+
+Send questions, comments, suggestions, and bug reports to <dsutch@doc.gov>.
+
+To be notified of updates to WWW::Search::FirstGov, subscribe to the update
+notification list at http://two.pairlist.net/mailman/listinfo/www-search-firstgov
 
 =head1 AUTHOR
 
@@ -351,6 +358,11 @@ MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 None reported.
 
 =head1 VERSION HISTORY
+
+1.12  2002-06-03 - Updated to reflect changes to FirstGov (on 2002 Jun 03 they switched to a new search engine built by Fast Search & Transfer of Oslo, Norway).
+                     * The native_query options 'fr' and 'st' are obsolete.
+                     * the native_query option 'in0' now accepts the value 'any' instead of 'anywhere', and the value of 'home' is obsolete.
+                   Removed redefined WWW::Search functionality.
 
 1.11  2002-03-13 - Upated to reflect changed FirstGov search engine parameters.
                    approximate_result_count() now returns 1 more than the result count when FirstGov's result count is "more than X relevant results". 
@@ -380,7 +392,7 @@ require Exporter;
 @WWW::Search::FirstGov::EXPORT = qw();
 @WWW::Search::FirstGov::EXPORT_OK = qw();
 @WWW::Search::FirstGov::ISA = qw( WWW::Search Exporter );
-$WWW::Search::FirstGov::VERSION = '1.11';
+$WWW::Search::FirstGov::VERSION = '1.12';
 
 $WWW::Search::FirstGov::MAINTAINER = 'Dennis Sutch <dsutch@doc.gov>';
 
@@ -390,19 +402,12 @@ require WWW::SearchResult;
 
 my $default_option = {
 		'search_url' => 'http://www.firstgov.gov/fgsearch/index.jsp',
-		'rn' => '2',
-#		'mw0' => 'search words',
-#		'Submit' => 'Go',
-		'fr' => 0,  # return results starting at match number 'fr' plus or minus 'nr', when act.next.x and .y (or act.prev.x and .y) are set
+#		'mw0' => '',  # search words
+		'offset' => 0,  # return results starting at match number 'offset' plus 1 and plus (or minus) 'nr', when act.next.x and .y (or act.prev.x and .y) are set
 		'nr' => 20,  # number of results returned per page (max = 100)
-		'mt0' => 'all',  # match: "all" = All Words | "any" = Any Words | "phrase" = The Exact Phrase | "name" = A Person's Name | "urls" = Embedded URLs
-		'ms0' => 'should',  # "should" = Should | "mustnot" = Must Not
-		'db' => 'www',
-#		'st' => 'AS',
-#		'parsed' => 'true'
-#		'de' => 'detailed',  # format of results (may be: "detailed" | "brief") Important: FirstGov.gov treats 'de' as 'brief' whenever 'nr' is set to 100
-		'srcfrm' => 'query',  # seems to be required (added by FirstGov.gov's redirect)
-		'parsed' => 'true',  # seems to be required (added by FirstGov.gov's redirect)
+		'mt0' => 'all',  # match: "all" = All of the words | "any" = Any of the words | "phrase" = The exact phrase
+		'ms0' => 'must',  # "should" = Should include | "mustnot" = Must not include | "must" = Must include
+		'parsed' => 'true',  # (added by FirstGov.gov's redirect)
 		};
 
 sub native_setup_search {
@@ -415,6 +420,11 @@ sub native_setup_search {
 
 	$self->{'agent_name'} = ref($self) . '/' . $WWW::Search::FirstGov::VERSION;
 	$self->user_agent('non-robot');
+
+	my $oTree = new HTML::TreeBuilder;
+	$oTree->store_comments(1);  # comments are required to parse results page
+	$self->{'_treebuilder'} = $oTree;
+
 	$self->{'_next_to_retrieve'} = 0;
 
 	$self->{'_num_hits'} = 0;
@@ -434,7 +444,7 @@ sub native_setup_search {
 	if (exists($native_options_ref->{'begin_at'}) && defined($native_options_ref->{'begin_at'})) {
 		my $begin_at = $native_options_ref->{'begin_at'} || 1;
 		$begin_at = 1 if ($begin_at < 1);
-		$self->{'_options'}{'fr'} = $begin_at - 1 - $self->{'_options'}{'nr'};
+		$self->{'_options'}{'offset'} = $begin_at - 1 - $self->{'_options'}{'nr'};
 		$self->{'_options'}{'act.next.x'} = 1;
 		$self->{'_options'}{'act.next.y'} = 1;
 	}
@@ -477,7 +487,7 @@ sub parse_tree {
 
 	# SearchResults
 	my $hits_found = 0;
-	my $results_table_comment = $tree->look_down('_tag', '~comment', sub { $_[0]->attr('text') =~ m{Begin\s+Results\s+Table}si });
+	my $results_table_comment = $tree->look_down('_tag', '~comment', sub { $_[0]->attr('text') =~ m{Begin\s+display\s+of\s+search\s+results}si });
 	return undef if (! defined($results_table_comment));  # exit if no results table comment
 	my $results_table = $results_table_comment->right();  # locate table containing results
 	return undef if (! defined($results_table));  # exit if no results table
@@ -493,7 +503,7 @@ sub parse_tree {
 		} elsif (! exists($result{'url'})) {  # url/title (anchor) TD occurs second
 			if (my $result_a = $result_td->look_down('_tag', 'a')) {  # if TD contains A
 				$result{'url'} = $result_a->attr('href');
-				if ($result{'url'} =~ m{url=([^&]+)}i) {
+				if ($result{'url'} =~ m{url=([^&]+)}i) {  # strip URL out of FirstGov.gov's redirect URL
 					$result{'url'} = $1;
 				}
 				$result{'title'} = $result_a->as_text();
@@ -513,16 +523,16 @@ sub parse_tree {
 	# _next_url
 	my $input_fr = undef;
 	my $form = $tree->look_down('_tag', 'form', sub {
-			defined($input_fr = $_[0]->look_down('_tag', 'input', sub { $_[0]->attr('name') eq 'fr' })) &&
+			defined($input_fr = $_[0]->look_down('_tag', 'input', sub { $_[0]->attr('name') eq 'offset' })) &&
 			defined($_[0]->look_down('_tag', 'input', sub { $_[0]->attr('name') eq 'nr' }))
 			});
 	if (defined($form->look_down('_tag', 'input', sub { lc($_[0]->attr('type')) eq 'image' && lc($_[0]->attr('name')) eq 'act.next' }))) {
 		$self->{'_next_url'} = $self->{'_prev_url'};
-		if ($self->{'_next_url'} =~ s|([?&]fr=)(-?\d+)(&.+)?$||) {
+		if ($self->{'_next_url'} =~ s|([?&]offset=)(-?\d+)(&.+)?$||) {
 			my $tail = $3 || '';
 			$self->{'_next_url'} .= $1 . $input_fr->attr('value') . $tail;
 		} else {
-			$self->{'_next_url'} .= '&fr=' . $input_fr->attr('value');
+			$self->{'_next_url'} .= '&offset=' . $input_fr->attr('value');
 		}
 		if ($self->{'_next_url'} !~ m|act\.next\.x|) {
 			$self->{'_next_url'} .= '&act.next.x=1&act.next.y=1';
@@ -534,35 +544,4 @@ sub parse_tree {
 	return $hits_found;
 }
 
-# native_retrieve_some is copied from WWW::Search and modified to set store_comments(1) for HTML::TreeBuilder object 
-# required because FirstGov
-sub native_retrieve_some
-  {
-  my ($self) = @_;
-  printf STDERR (" +   %s::native_retrieve_some()\n", __PACKAGE__) if $self->{_debug};
-  # fast exit if already done
-  return undef if (!defined($self->{_next_url}));
-  # If this is not the first page of results, sleep so as to not overload the server:
-  $self->user_agent_delay if 1 < $self->{'_next_to_retrieve'};
-  # Get one page of results:
-  print STDERR " +   sending request (", $self->{'_next_url'}, ")\n" if $self->{_debug};
-  my $response = $self->http_request('GET', $self->{'_next_url'});
-  $self->{_prev_url} = $self->{_next_url};
-  $self->{'_next_url'} = undef;
-  $self->{response} = $response;
-  if (! $response->is_success)
-    {
-    return undef;
-    } # if
-  # Parse the output:
-  ### beginning of modified section ###
-  my $tree = HTML::TreeBuilder->new();
-  $tree->store_comments(1);
-  $tree->parse($self->preprocess_results_page($response->content));
-  $tree->eof();
-  ### end of modified section ###
-  return $self->parse_tree($tree);
-  } # native_retrieve_some
-
 1;
-

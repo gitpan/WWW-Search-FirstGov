@@ -4,5 +4,5 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'		=> 'WWW::Search::FirstGov',
     'VERSION_FROM'	=> 'FirstGov.pm', # finds $VERSION
-    'PREREQ_PM'		=> { 'WWW::Search' => 0 }, # e.g., Module::Name => 1.1
+    'PREREQ_PM'		=> { 'WWW::Search' => 2.28 }, # e.g., Module::Name => 1.1
 );
