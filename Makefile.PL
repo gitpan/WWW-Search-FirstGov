@@ -1,0 +1,8 @@
+use ExtUtils::MakeMaker;
+# See lib/ExtUtils/MakeMaker.pm for details of how to influence
+# the contents of the Makefile that is written.
+WriteMakefile(
+    'NAME'		=> 'WWW::Search::FirstGov',
+    'VERSION_FROM'	=> 'FirstGov.pm', # finds $VERSION
+    'PREREQ_PM'		=> { 'WWW::Search' => 0 }, # e.g., Module::Name => 1.1
+);

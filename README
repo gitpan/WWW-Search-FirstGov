@@ -1,0 +1,31 @@
+WWW::Search::FirstGov - backend class for searching FirstGov.gov
+
+PREREQUISITES
+-------------
+
+WWW::Search (tested with version 2.15)
+
+INSTALLATION
+------------
+
+   > perl Makefile.PL
+   > make
+   > make test
+   > make install
+
+DOCUMENTATION
+-------------
+
+POD-format documentation is included in FirstGov.pm.  See WWW::Search
+documentation for general information.
+
+SUPPORT
+-------
+
+Send questions, comments, suggestions, and bug reports to <dsutch@doc.gov>.
+
+AVAILABILITY
+------------
+
+The latest version of this module is available from the
+Comprehensive Perl Archive Network (CPAN).
