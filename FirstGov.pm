@@ -80,6 +80,9 @@ None reported.
 
 =head1 VERSION HISTORY
 
+1.01  2001-02-26 - Fixed problem with quoted sring on MSWin.
+                   Removed 'our' declarations.
+
 1.00  2001-02-23 - First publicly-released version.
 
 =cut
@@ -89,15 +92,15 @@ require 5.005_62;
 use strict;
 
 require Exporter;
-our @EXPORT = qw();
-our @EXPORT_OK = qw();
-our @ISA = qw( WWW::Search Exporter );
-our $VERSION = '1.00';
+my @EXPORT = qw();
+my @EXPORT_OK = qw();
+my @ISA = qw( WWW::Search Exporter );
+my $VERSION = '1.01';
 
-our $MAINTAINER = 'Dennis Sutch <dsutch@doc.gov>';
+our $MAINTAINER = 'Dennis Sutch <dsutch@doc.gov>'; $MAINTAINER if (0); # supress warning
 
 use Carp ();
-use WWW::Search(generic_option);
+use WWW::Search( 'generic_option' );
 require WWW::SearchResult;
 
 my $default_option = {
