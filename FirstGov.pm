@@ -80,6 +80,8 @@ None reported.
 
 =head1 VERSION HISTORY
 
+1.04  2001-07-16 - Fixed parsing problem.
+
 1.03  2001-03-01 - Removed 'require 5.005_62;'.
 
 1.02  2001-03-01 - Removed 'my' declarations for package variables.
@@ -98,7 +100,7 @@ require Exporter;
 @WWW::Search::FirstGov::EXPORT = qw();
 @WWW::Search::FirstGov::EXPORT_OK = qw();
 @WWW::Search::FirstGov::ISA = qw( WWW::Search Exporter );
-$WWW::Search::FirstGov::VERSION = '1.02';
+$WWW::Search::FirstGov::VERSION = '1.04';
 
 $WWW::Search::FirstGov::MAINTAINER = 'Dennis Sutch <dsutch@doc.gov>';
 
@@ -183,7 +185,7 @@ sub native_retrieve_some {
 	my ($self) = @_;
 	print STDERR "**FirstGov::native_retrieve_some()\n" if $self->{'_debug'};
 	return undef if (!defined($self->{'_next_url'})); 	# fast exit if already done
-	$self->user_agent_delay if ($self->{'_next_to_retrieve'} > 1); 	# if this is not the first page of results, sleep so as to not overload the server
+#	$self->user_agent_delay if ($self->{'_next_to_retrieve'} > 1); 	# if this is not the first page of results, sleep so as to not overload the server
 	print STDERR "**Requesting (" . $self->{'_next_url'} . ")\n" if ($self->{'_debug'});
 	my $response = $self->http_request('GET', $self->{'_next_url'});
 	$self->{response} = $response;
@@ -191,31 +193,31 @@ sub native_retrieve_some {
 	my $current_url = $self->{'_next_url'};
 	$self->{'_next_url'} = undef;
 	print STDERR "**Found Some\n" if ($self->{'_debug'});
-	my ($HEADER, $FR, $MATCHES, $URL, $SCORE, $DESCRIPTION) = qw(HEADER MATCHES URL SCORE DESCRIPTION);
+	my ($HEADER, $FR, $MATCHES, $URL, $SCORE, $DESCRIPTION) = qw(HEADER FR MATCHES URL SCORE DESCRIPTION);
 	my $state = $HEADER;
 	my $hits_found = 0;
 	my $has_next_url = 0;
 	my $next_fr = undef;
 	my $hit = ();
-	foreach ($self->split_lines($response->content())) {
-		next if (m/^\s*$/);  # short circuit for blank lines
-		print STDERR " * $state ===$_=== " if ($self->{'_debug'} >= 2);
-		if ($state eq $HEADER && m|<input type="hidden" name="fr"(.*)|i) {
+	foreach my $line ($self->split_lines($response->content())) {
+		next if ($line =~ m|^\s*$|);  # short circuit for blank lines
+		print STDERR " * $state ===$line=== " if ($self->{'_debug'} >= 2);
+		if ($state eq $HEADER && $line =~ m|<input type="hidden" name="fr"(.*)|i) {
 			my $value = $1;
 			if ($value =~ m|value="(\d*)">|) {
 				$next_fr = $1;
 			} else {
 				$state = $FR;
 			}
-		} elsif ($state eq $FR && m|value="(\d*)">|i) {
+		} elsif ($state eq $FR && $line =~ m|value="(\d*)">|i) {
 			$next_fr = $1;
 			$state = $HEADER;
-		} elsif ($state eq $HEADER && m|<td><b>Returned:</b> (\d+) matches|i) {
+		} elsif ($state eq $HEADER && $line =~ m|<td><b>Returned:</b>\s+(\d+) matches|i) {
 			$self->approximate_result_count($1);
 			$state = $MATCHES;
-		} elsif ($state eq $MATCHES && m|name="act.next" border="0" VALUE="Next" WIDTH="17" HEIGHT="19">|i) {
+		} elsif ($state eq $MATCHES && $line =~ m|name="act.next" border="0" VALUE="Next" WIDTH="17" HEIGHT="19">|i) {
 			$has_next_url = 1;
-		} elsif ($state eq $MATCHES && m|<TD nowrap><a href="([^"]+)">(.*)</A></TD></TR>\s*$|i) {
+		} elsif ($state eq $MATCHES && $line =~ m|<TD nowrap><a href="([^"]+)">(.*)</A></TD></TR>\s*$|i) {
 			print STDERR "**Found a URL and title\n" if ($self->{'_debug'} >= 2);
 			my ($url,$title) = ($1,$2);
 			if (defined($hit)) {
@@ -227,15 +229,15 @@ sub native_retrieve_some {
 			$title =~ s/&amp;/&/g;
 			$hit->title($title);
 			$state = $URL;
-		} elsif ($state eq $URL && m|<TR><TD align="center" colspan="2"><FONT size="-1">(\d+)% </FONT></TD>|i) {
+		} elsif ($state eq $URL && $line =~ m|<TR><TD align="center" colspan="2"><FONT size="-1">(\d+)% </FONT></TD>|i) {
 			print STDERR "**Found score\n" if ($self->{'_debug'} >= 2);
 			$hit->score($1);
 			$state = $SCORE;
-		} elsif ($state eq $SCORE && m|<TR><TD colspan="3">(.*)</TD></TR>|i) {
+		} elsif ($state eq $SCORE && $line =~ m|<TR><TD colspan="3">(.*)</TD></TR>|i) {
 			print STDERR "**Found description\n" if ($self->{'_debug'} >= 2);
 			$hit->description($1);
 			$state = $DESCRIPTION;
-		} elsif ($state eq $DESCRIPTION && m|<TR><TD colspan="2"></TD><TD nowrap><FONT size="-1" color="#888888">(\d+) bytes, (\d+/\d+/\d+)</FONT></TD></TR>|i) {
+		} elsif ($state eq $DESCRIPTION && $line =~ m|<TR><TD colspan="2"></TD><TD nowrap><FONT size="-1" color="#888888">(\d+) bytes, (\d+/\d+/\d+)</FONT></TD></TR>|i) {
 			print STDERR "**Found size\n" if ($self->{'_debug'} >= 2);
 			$hit->size($1);
 			$hit->change_date($2);
@@ -247,7 +249,8 @@ sub native_retrieve_some {
 	if ($has_next_url && defined($next_fr)) {
 		$self->{'_next_url'} = $current_url;
 		if ($self->{'_next_url'} =~ s|([?&]fr=)(\d+)(&.+)?$||) {
-			$self->{'_next_url'} .= $1 . $next_fr . $3;
+			my $tail = $3 || '';
+			$self->{'_next_url'} .= $1 . $next_fr . $tail;
 		} else {
 			$self->{'_next_url'} .= '&fr=' . $next_fr;
 		}

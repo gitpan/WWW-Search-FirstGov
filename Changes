@@ -1,5 +1,11 @@
 Revision history for Perl extension WWW::Search::FirstGov.
 
+2001-07-16  Dennis Sutch <dennis@sutch.com>
+
+  Release 1.04
+  - fixed parsing problem
+  - commented out user_agent_delay, since it wasn't working anyway
+
 2001-03-01  Dennis Sutch <dennis@sutch.com>
 
   Release 1.03
