@@ -80,6 +80,8 @@ None reported.
 
 =head1 VERSION HISTORY
 
+1.03  2001-03-01 - Removed 'require 5.005_62;'.
+
 1.02  2001-03-01 - Removed 'my' declarations for package variables.
 
 1.01  2001-02-26 - Fixed problem with quoted sring on MSWin.
@@ -90,7 +92,6 @@ None reported.
 =cut
 
 #####################################################################
-require 5.005_62;
 use strict;
 
 require Exporter;
