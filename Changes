@@ -1,11 +1,16 @@
 Revision history for Perl extension WWW::Search::FirstGov.
 
+2001-03-01  Dennis Sutch <dennis@sutch.com>
+
+  Release 1.02
+  - replaced 'my' declarations with variable names prefixed with package name
+
 2001-02-26  Dennis Sutch <dennis@sutch.com>
 
   Release 1.01
   - quoted a string that caused problems under MSWin
   - changed 'our' declarations to 'my'
-  - used variable MAINTAINER to stop warning when using -w flag 
+  - used variable $MAINTAINER to stop warning when using -w flag 
 
 2001-02-23  Dennis Sutch <dennis@sutch.com>
 

@@ -80,6 +80,8 @@ None reported.
 
 =head1 VERSION HISTORY
 
+1.02  2001-03-01 - Removed 'my' declarations for package variables.
+
 1.01  2001-02-26 - Fixed problem with quoted sring on MSWin.
                    Removed 'our' declarations.
 
@@ -92,12 +94,12 @@ require 5.005_62;
 use strict;
 
 require Exporter;
-my @EXPORT = qw();
-my @EXPORT_OK = qw();
-my @ISA = qw( WWW::Search Exporter );
-my $VERSION = '1.01';
+@WWW::Search::FirstGov::EXPORT = qw();
+@WWW::Search::FirstGov::EXPORT_OK = qw();
+@WWW::Search::FirstGov::ISA = qw( WWW::Search Exporter );
+$WWW::Search::FirstGov::VERSION = '1.02';
 
-our $MAINTAINER = 'Dennis Sutch <dsutch@doc.gov>'; $MAINTAINER if (0); # supress warning
+$WWW::Search::FirstGov::MAINTAINER = 'Dennis Sutch <dsutch@doc.gov>';
 
 use Carp ();
 use WWW::Search( 'generic_option' );
