@@ -127,6 +127,8 @@ would like to search for.
 
 WWW::Search::FirstGov defaults the mt0 option to 'all'.
 
+
+
 From FirstGov.gov documentation:
 
 The Main Type field (mt0) is used to specify how you want to search for the
@@ -168,9 +170,9 @@ specifically to search.  Setting in0 to "anywhere" searches the complete web
 page of all web pages in a particular database.  [...]  Setting in0 to "title"
 searches only the Titles of web pages of a particular database.
 
-=item   { 'in0' => 'domain', 'dom0' => 'doc.gov noaa.gov', 'doTtoggle' => ' +(' }
+=item   { 'in0' => 'domain', 'dom0' => 'doc.gov noaa.gov', 'domToggle' => ' +(' }
 
-=item   { 'in0' => 'domain', 'dom0' => 'doc.gov noaa.gov', 'doTtoggle' => ' -(' }
+=item   { 'in0' => 'domain', 'dom0' => 'doc.gov noaa.gov', 'domToggle' => ' -(' }
 
 The query is limited to searching the doc.gov and noaa.gov domains when the
 doToggle option is set to ' +(' (note leading space).  The query is limited to
@@ -190,6 +192,103 @@ searching web pages within your domain.  In fact, you may specify as many
 domain or domain/path combinations up to 20 that you would like to limit your
 searches to.  You can use any combination of domains or domain/path elements
 as long as they are separated by a comma or a space.
+
+=item   { 'rs' => '1' }
+
+Results will include variations (example: vote, voting).
+
+=item   { 'doc' => '' }
+
+=item   { 'doc' => 'text/html' }
+
+=item   { 'doc' => 'application/pdf' }
+
+=item   { 'doc' => 'text/xml' }
+
+=item   { 'doc' => 'application/msword' }
+
+=item   { 'doc' => 'application/vnd.ms-excel' }
+
+=item   { 'doc' => 'application/vnd.ms-powerpoint' }
+
+=item   { 'doc' => 'text/plain' }
+
+Restrict results to a type of document.
+
+=item   { 'age' => 'any' }
+
+=item   { 'age' => '1m' }
+
+=item   { 'age' => '3m' }
+
+=item   { 'age' => '6m' }
+
+=item   { 'age' => '9m' }
+
+=item   { 'age' => '1y' }
+
+Restrict results to date document was updated.
+
+=item   { 'sop' => '<', 'siz' => '512', 'byt' => 'b' }
+
+Restrict results to documents less than 512 bytes.
+
+The attribute sop may be set to '<' or '>'.  The attribute 'byt' may be set to
+'b', 'kb', or 'mb'.
+
+=item   { 'lang' => '' }
+
+The query is not limited by language.
+
+To limit a query to documents of a specific language, set this option to one of
+FirstGov's language abbreviations (an empty string denotes "Any language"):
+af - Afrikaans,
+sq - Albanian,
+ar - Arabic,
+eu - Basque,
+be - Byelorussian,
+bg - Bulgarian,
+ca - Catalan,
+tzh - Chinese (trad),
+szh - Chinese (simp),
+hr - Croatian,
+cs - Czech,
+da - Danish,
+nl - Dutch,
+en - English,
+et - Estonian,
+fo - Faeroese,
+fi - Finnish,
+fr - French,
+fy - Frisian,
+gl - Galician,
+de - German,
+el - Greek,
+he - Hebrew,
+hu - Hungarian,
+is - Icelandic,
+id - Indonesian,
+it - Italian,
+ja - Japanese,
+ko - Korean,
+la - Latin,
+lv - Latvian,
+lt - Lithuanian,
+ms - Malay,
+no - Norwegian,
+pl - Polish,
+pt - Portuguese,
+ro - Romanian,
+ru - Russian,
+sk - Slovak,
+sl - Slovenian,
+es - Spanish,
+sv - Swedish,
+th - Thai,
+tr - Turkish,
+uk - Ukrainian,
+vi - Vietnamese,
+cy - Welsh
 
 =back
 
@@ -296,6 +395,20 @@ The Referrer Name (rn) field is used to uniquely identify your affiliate.
 Each Affiliate, upon registration, is assigned a referrer ID that corresponds
 to it.
 
+=item   { 'srt' => '' }
+
+Sort results by relevance (FirstGov.gov's default).
+
+Additional values are: 8 (Date - ascending), 7 (Date - descending), 6
+(Size - ascending), and 5 (Size - descending).
+
+=item   { 'dsc' => 'det' }
+
+=item   { 'dsc' => 'sum' }
+
+Whether ('det') or not ('sum') to highlight search terms in result
+summaries.
+
 =back
 
 =head2 Other Options
@@ -308,6 +421,21 @@ The default behavior for FirstGov.gov's search engine is to parse all search
 requests, and, if any options are missing or deprecated, rewrite the options
 and redirect the browser back to FirstGov.gov.  When the parsed option is set
 to "true", FirstGov.gov does not perform this action.
+
+=item   { 'sp' => '1' }
+
+Check spelling of the query terms.  FirstGov.gov will return a message and
+a resubmit buttion if it finds misspelled query terms.
+
+Note: WWW::Search::FirstGov does not parse the results for this option.
+
+=item   { 'submit' => 'Search' }
+
+Submit button.
+
+=item   { 'md' => 'adv' }
+
+Function is unknown.
 
 =back
 
@@ -361,6 +489,8 @@ None reported.
 
 =head1 VERSION HISTORY
 
+1.14  2003-04-08 - Updated parsing.
+                   Documented new search parameters.
 1.13  2002-06-04 - Updated Makefile.PL to reflect requirement for WWW::Search version 2.33.
                    Rewrote tests to use WWW::Search::Test.
 1.12  2002-06-03 - Updated to reflect changes to FirstGov (on 2002 Jun 03 they switched to a new search engine built by Fast Search & Transfer of Oslo, Norway).
@@ -396,7 +526,7 @@ require Exporter;
 @WWW::Search::FirstGov::EXPORT = qw();
 @WWW::Search::FirstGov::EXPORT_OK = qw();
 @WWW::Search::FirstGov::ISA = qw( WWW::Search Exporter );
-$WWW::Search::FirstGov::VERSION = '1.13';
+$WWW::Search::FirstGov::VERSION = '1.14';
 
 $WWW::Search::FirstGov::MAINTAINER = 'Dennis Sutch <dsutch@doc.gov>';
 
@@ -404,8 +534,10 @@ use Carp ();
 use WWW::Search( 'generic_option' );
 require WWW::SearchResult;
 
+my $SEARCH_URL_PATH = 'http://www.firstgov.gov/fgsearch/';
+
 my $default_option = {
-		'search_url' => 'http://www.firstgov.gov/fgsearch/index.jsp',
+		'search_url' => $SEARCH_URL_PATH . 'index.jsp',
 #		'mw0' => '',  # search words
 		'offset' => 0,  # return results starting at match number 'offset' plus 1 and plus (or minus) 'nr', when act.next.x and .y (or act.prev.x and .y) are set
 		'nr' => 20,  # number of results returned per page (max = 100)
@@ -466,7 +598,7 @@ sub parse_tree {
 
 	print STDERR " + WWW::Search::FirstGov::parse_tree()\n" if ($self->{'_debug'});
 
-	print STDERR " + result HTML page tree:\n" if ($self->{'_debug'} > 1);
+	print STDERR " + (parse_tree) result HTML page tree:\n" if ($self->{'_debug'} > 1);
 	$tree->dump( *STDERR ) if ($self->{'_debug'} > 1);
 
 	return undef if (! defined($self->{'_prev_url'}));  # fast exit if already done
@@ -487,7 +619,7 @@ sub parse_tree {
 	if (defined($result_count)) {
 		$self->approximate_result_count($result_count);
 	}
-	print STDERR " + approximate_result_count is " . $result_count . "\n" if ($self->{'_debug'});
+	print STDERR " + (parse_tree) approximate_result_count is " . $result_count . "\n" if ($self->{'_debug'});
 
 	# SearchResults
 	my $hits_found = 0;
@@ -499,7 +631,7 @@ sub parse_tree {
 	my %result = ();  # hash to contain one result
 	foreach my $result_td (@results_tds) {
 		next if ($result_td->as_text() =~ m{^(\s|\xA0)*$}s);  # ignore any white space (or &nbsp;) TDs
-		print STDERR " + result_td: " . $result_td->as_text() . "\n" if ($self->{'_debug'} > 1);
+		print STDERR " + (parse_tree) result_td: " . $result_td->as_text() . "\n" if ($self->{'_debug'} > 1);
 		if (! exists($result{'count'})) {  # count TD occurs first
 			if ($result_td->as_text() =~ m{^\s*(\d+)\.?\s*$}s) {  # digit(s) with optional period
 				$result{'count'} = $1;
@@ -525,26 +657,19 @@ sub parse_tree {
 	}
 
 	# _next_url
-	my $input_fr = undef;
-	my $form = $tree->look_down('_tag', 'form', sub {
-			defined($input_fr = $_[0]->look_down('_tag', 'input', sub { $_[0]->attr('name') eq 'offset' })) &&
-			defined($_[0]->look_down('_tag', 'input', sub { $_[0]->attr('name') eq 'nr' }))
-			});
-	if (defined($form->look_down('_tag', 'input', sub { lc($_[0]->attr('type')) eq 'image' && lc($_[0]->attr('name')) eq 'act.next' }))) {
-		$self->{'_next_url'} = $self->{'_prev_url'};
-		if ($self->{'_next_url'} =~ s|([?&]offset=)(-?\d+)(&.+)?$||) {
-			my $tail = $3 || '';
-			$self->{'_next_url'} .= $1 . $input_fr->attr('value') . $tail;
-		} else {
-			$self->{'_next_url'} .= '&offset=' . $input_fr->attr('value');
-		}
-		if ($self->{'_next_url'} !~ m|act\.next\.x|) {
-			$self->{'_next_url'} .= '&act.next.x=1&act.next.y=1';
-		}
-		print STDERR " + _next_url: " . $self->{'_next_url'} . "\n" if ($self->{'_debug'});
+	my $a_href = undef;
+	if ($tree->look_down('_tag', 'table', sub {
+			defined($_[0]->look_down('_tag', 'font', sub {
+				defined($a_href = $_[0]->look_down('_tag', 'a', sub {
+					defined($_[0]->look_down('_tag', 'img', sub {
+						$_[0]->attr('alt') =~ /next/i }))}))}))})) {
+		$self->{'_next_url'} = $SEARCH_URL_PATH . $a_href->attr('href');
+		print STDERR " + (parse_tree) _next_url is " . $self->{'_next_url'} . "\n" if ($self->{'_debug'});
+	} else {
+		print STDERR " + (parse_tree) _next_url is undefined\n" if ($self->{'_debug'});
 	}
 
-	print STDERR " + hits_found: " . $hits_found . "\n" if ($self->{'_debug'});
+	print STDERR " + (parse_tree) hits_found: " . $hits_found . "\n" if ($self->{'_debug'});
 	return $hits_found;
 }
 
