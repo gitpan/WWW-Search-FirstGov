@@ -1,5 +1,10 @@
 Revision history for Perl extension WWW::Search::FirstGov.
 
+2002-06-04  Dennis Sutch <dennis@sutch.com>
+  Release 1.13
+  - updated Makefile.PL to reflect requirement for WWW::Search version 2.33
+  - rewrote tests to use WWW::Search::Test
+
 2002-06-03  Dennis Sutch <dennis@sutch.com>
   Release 1.12
   - updated to reflect changes to FirstGov (switched to a new search engine built by Fast Search & Transfer of Oslo, Norway on 2002 Jun 03)

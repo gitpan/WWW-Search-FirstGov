@@ -282,7 +282,7 @@ VI - Virgin Islands.
 
 Request FirstGov.gov to return pages using affiliate #2's page format.
 
-This option is used by FirstGov.gov to return result  pages customized
+This option is used by FirstGov.gov to return result pages customized
 with headers and footers for the affiliate as identified by the 'rn' option.
 
 When not set, FirstGov.gov currently sets the 'rn' parameter to '2'.
@@ -299,6 +299,8 @@ to it.
 =back
 
 =head2 Other Options
+
+=over 4
 
 =item   { 'parsed' => 'true' }
 
@@ -359,6 +361,8 @@ None reported.
 
 =head1 VERSION HISTORY
 
+1.13  2002-06-04 - Updated Makefile.PL to reflect requirement for WWW::Search version 2.33.
+                   Rewrote tests to use WWW::Search::Test.
 1.12  2002-06-03 - Updated to reflect changes to FirstGov (on 2002 Jun 03 they switched to a new search engine built by Fast Search & Transfer of Oslo, Norway).
                      * The native_query options 'fr' and 'st' are obsolete.
                      * the native_query option 'in0' now accepts the value 'any' instead of 'anywhere', and the value of 'home' is obsolete.
@@ -392,7 +396,7 @@ require Exporter;
 @WWW::Search::FirstGov::EXPORT = qw();
 @WWW::Search::FirstGov::EXPORT_OK = qw();
 @WWW::Search::FirstGov::ISA = qw( WWW::Search Exporter );
-$WWW::Search::FirstGov::VERSION = '1.12';
+$WWW::Search::FirstGov::VERSION = '1.13';
 
 $WWW::Search::FirstGov::MAINTAINER = 'Dennis Sutch <dsutch@doc.gov>';
 
