@@ -1,5 +1,11 @@
 Revision history for Perl extension WWW::Search::FirstGov.
 
+2002-03-05  Dennis Sutch <dennis@sutch.com>
+  Release 1.10
+  - updated to handle new FirstGov search engine format and to use HTML::TreeBuilder
+  - fixed problem that caused one too many searches against FirstGov.gov
+  - documented additional options, including adding notes from FirstGov.gov documentation
+
 2001-07-16  Dennis Sutch <dennis@sutch.com>
 
   Release 1.04

@@ -3,7 +3,7 @@ WWW::Search::FirstGov - backend class for searching FirstGov.gov
 PREREQUISITES
 -------------
 
-WWW::Search (tested with version 2.15)
+WWW::Search (tested with version 2.26)
 
 INSTALLATION
 ------------
