@@ -1,5 +1,11 @@
 Revision history for Perl extension WWW::Search::FirstGov.
 
+2002-03-13  Dennis Sutch <dennis@sutch.com>
+  Release 1.11
+  - upated to reflect changed FirstGov search engine parameters
+  - approximate_result_count() now returns 1 more than the result count when FirstGov's result count is "more than X relevant results"
+  - changed test case 4 to finish sooner
+
 2002-03-05  Dennis Sutch <dennis@sutch.com>
   Release 1.10
   - updated to handle new FirstGov search engine format and to use HTML::TreeBuilder

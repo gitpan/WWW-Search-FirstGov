@@ -38,8 +38,7 @@ print "ok $test\n";
 $test++;
 $query = 'commerce';
 $search->native_query(WWW::Search::escape_query($query));
-@results = $search->results();
-$results = scalar(@results);
+$results = $search->approximate_result_count();
 if ($results == 0) {
   print STDERR " --- got $results results for $query, but expected more...\n";
   print 'not ';

@@ -352,6 +352,10 @@ None reported.
 
 =head1 VERSION HISTORY
 
+1.11  2002-03-13 - Upated to reflect changed FirstGov search engine parameters.
+                   approximate_result_count() now returns 1 more than the result count when FirstGov's result count is "more than X relevant results". 
+                   Changed test case 4 (in test.pl) to finish sooner.
+
 1.10  2002-03-05 - Updated to handle new FirstGov search engine format and to use HTML::TreeBuilder.
                    Fixed problem that caused one too many searches against FirstGov.gov.
                    Documented additional options, including adding notes from FirstGov.gov documentation.
@@ -376,7 +380,7 @@ require Exporter;
 @WWW::Search::FirstGov::EXPORT = qw();
 @WWW::Search::FirstGov::EXPORT_OK = qw();
 @WWW::Search::FirstGov::ISA = qw( WWW::Search Exporter );
-$WWW::Search::FirstGov::VERSION = '1.10';
+$WWW::Search::FirstGov::VERSION = '1.11';
 
 $WWW::Search::FirstGov::MAINTAINER = 'Dennis Sutch <dsutch@doc.gov>';
 
@@ -386,7 +390,7 @@ require WWW::SearchResult;
 
 my $default_option = {
 		'search_url' => 'http://www.firstgov.gov/fgsearch/index.jsp',
-#		'rn' => '2',
+		'rn' => '2',
 #		'mw0' => 'search words',
 #		'Submit' => 'Go',
 		'fr' => 0,  # return results starting at match number 'fr' plus or minus 'nr', when act.next.x and .y (or act.prev.x and .y) are set
@@ -396,7 +400,7 @@ my $default_option = {
 		'db' => 'www',
 #		'st' => 'AS',
 #		'parsed' => 'true'
-		'de' => 'detailed',  # format of results (may be: "detailed" | "brief") Important: FirstGov.gov treats 'de' as 'brief' whenever 'nr' is set to 100
+#		'de' => 'detailed',  # format of results (may be: "detailed" | "brief") Important: FirstGov.gov treats 'de' as 'brief' whenever 'nr' is set to 100
 		'srcfrm' => 'query',  # seems to be required (added by FirstGov.gov's redirect)
 		'parsed' => 'true',  # seems to be required (added by FirstGov.gov's redirect)
 		};
@@ -461,7 +465,7 @@ sub parse_tree {
 		if ($text =~ m{Your\s+(.*\s)?search\s+(for.*\s.*\s)?returned\s+(\d+)\s+results\.}is) {
 			$result_count = $3;
 		} elsif ($text =~ m{Your\s+(.*\s)?search\s+(for.*\s)?returned\s+more\s+than\s+(\d+)\s+(relevant\s+)results\.}is) {
-			$result_count = $3;
+			$result_count = $3 + 1;
 		} elsif ($text =~ m{Your\s+(.*\s)?search\s+(for.*\s.*\s)?did\s+not\s+return\s+any\s+documents\.}is) {
 			$result_count = 0;
 		}
